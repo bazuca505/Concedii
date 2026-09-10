@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leave Planner</title>
+<style>
+  :root{
+    --ink:#1B2A41; --paper:#F7F5F0; --card:#FFFFFF; --line:#E2DDD3;
+    --sage:#3F7D5C; --sageBg:#E5F0E9; --amber:#B8860B; --amberBg:#F6ECD4;
+    --rust:#9E4A3B; --rustBg:#F3E1DD; --muted:#7A7568;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Segoe UI',system-ui,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:28px 20px 60px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;
+    gap:16px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+  .eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+  h1{font-family:Georgia,serif;font-size:34px;margin:4px 0 0;font-weight:700}
+  h2{font-family:Georgia,serif;font-size:20px;margin:0 0 14px}
+  .authbox{display:flex;align-items:center;gap:10px}
+  .authbtn{padding:9px 16px;border:1px solid var(--ink);border-radius:8px;background:var(--card);
+    color:var(--ink);cursor:pointer;font-size:14px;font-weight:600}
+  .authbtn.on{background:var(--ink);color:var(--paper)}
+  .who{font-size:13px;color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:24px}
+  label span{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
+  input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;
+    background:var(--paper);color:var(--ink)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .primary{margin-top:16px;padding:11px 20px;background:var(--ink);color:var(--paper);border:none;
+    border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+  .nav button{padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+    color:var(--ink);cursor:pointer;font-size:14px;font-weight:600;margin-left:8px}
+  .nav button.today{background:var(--ink);color:var(--paper)}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:4px 0;
+    text-transform:uppercase;letter-spacing:1px}
+  .cell{min-height:74px;border:1px solid var(--line);border-radius:8px;padding:5px;background:var(--card)}
+  .cell.today{border-color:var(--ink)}
+  .dnum{font-size:12px;color:var(--muted)}
+  .pill{font-size:10px;border-radius:4px;padding:1px 4px;margin-top:2px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .legend{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);align-items:center}
+  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle}
+  .req{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;
+    border:1px solid var(--line);border-radius:10px;flex-wrap:wrap;margin-bottom:10px}
+  .status{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px}
+  .mini{padding:6px 12px;border-radius:8px;border:1px solid;cursor:pointer;font-size:13px;font-weight:600;
+    color:#fff;margin-left:6px}
+  .foot{margin-top:24px;font-size:12px;color:var(--muted);text-align:center}
+  .banner{border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px;display:none}
+  .modal{position:fixed;inset:0;background:rgba(27,42,65,.45);display:none;align-items:center;
+    justify-content:center;padding:20px;z-index:10}
+  .modal.show{display:flex}
+  .modalcard{background:var(--card);border-radius:14px;padding:24px;max-width:360px;width:100%}
+  .linkbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Leave register</div>
+      <h1>Leave Planner</h1>
+    </div>
+    <div class="authbox">
+      <span id="who" class="who"></span>
+      <button id="authBtn" class="authbtn" onclick="onAuthBtn()">Manager login</button>
+    </div>
+  </div>
+
+  <div id="conn" class="banner"></div>
+
+  <section id="formCard" class="card">
+    <h2>Leave request</h2>
+    <div class="grid">
+      <label><span>Employee name</span><input id="fName" placeholder="e.g. Jane Doe" /></label>
+      <label><span>From</span><input id="fStart" type="date" /></label>
+      <label><span>To</span><input id="fEnd" type="date" /></label>
+    </div>
+    <div style="margin-top:12px">
+      <label><span>Reason (optional)</span><input id="fReason" placeholder="e.g. Annual leave" /></label>
+    </div>
+    <div id="dur" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
+    <div id="err" style="margin-top:10px;color:var(--rust);font-size:13px"></div>
+    <button class="primary" onclick="submitReq()">Submit request</button>
+  </section>
+
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 id="calTitle" style="margin:0"></h2>
+      <div class="nav">
+        <button onclick="shiftMonth(-1)">&lsaquo;</button>
+        <button class="today" onclick="goToday()">Today</button>
+        <button onclick="shiftMonth(1)">&rsaquo;</button>
+      </div>
+    </div>
+    <div class="cal" id="cal"></div>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--sageBg);border-left:3px solid var(--sage)"></span>Approved</span>
+      <span><span class="swatch" style="background:var(--amberBg);border-left:3px solid var(--amber)"></span>Pending</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 id="listTitle">All requests</h2>
+    <div id="list"></div>
+  </section>
+
+  <div class="foot">Data syncs live. Approvals and deletions are allowed only for the authenticated manager.</div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modalcard">
+    <h2 style="margin-top:0">Manager sign in</h2>
+    <div style="margin-bottom:12px">
+      <label><span>Email</span><input id="lEmail" type="email" placeholder="manager@company.com" /></label>
+    </div>
+    <div>
+      <label><span>Password</span><input id="lPass" type="password" placeholder="********" /></label>
+    </div>
+    <div id="lErr" style="margin-top:10px;color:var(--rust);font-size:13px"></div>
+    <button class="primary" style="width:100%" onclick="doLogin()">Sign in</button>
+    <div style="text-align:center;margin-top:12px">
+      <button class="linkbtn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://heviandwservmtzxfrnt.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhldmlhbmR3c2Vydm10enhmcm50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ4MTksImV4cCI6MjEwNDM2MDgxOX0.CEy6M_3iOwWYHamGuJNuH5qOQaEMK9KQyZsjGwKvais";
+
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const STATUS={
+  pending:{label:"Pending",fg:"var(--amber)",bg:"var(--amberBg)"},
+  approved:{label:"Approved",fg:"var(--sage)",bg:"var(--sageBg)"},
+  rejected:{label:"Rejected",fg:"var(--rust)",bg:"var(--rustBg)"}
+};
+
+let requests=[], view=new Date(), isManager=false;
+
+const fmt=d=>d.toISOString().slice(0,10);
+const parse=s=>{const[y,m,dd]=s.split("-").map(Number);return new Date(y,m-1,dd)};
+const enLabel=s=>{const d=parse(s);return `${MONTHS[d.getMonth()].slice(0,3)} ${d.getDate()}`};
+const daysBetween=(a,b)=>Math.round((parse(b)-parse(a))/864e5)+1;
+function eachDay(a,b){const out=[];let d=parse(a),e=parse(b);
+  while(d<=e){out.push(fmt(d));d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)}return out}
+
+function banner(msg,kind){
+  const b=document.getElementById("conn");
+  b.style.display="block";b.textContent=msg;
+  const map={err:["var(--rustBg)","var(--rust)"],ok:["var(--sageBg)","var(--sage)"]};
+  const c=map[kind]||map.err;
+  b.style.background=c[0];b.style.color=c[1];b.style.border="1px solid "+c[1];
+  if(kind==="ok")setTimeout(()=>b.style.display="none",1500);
+}
+
+async function refreshAuth(){
+  const {data}=await sb.auth.getSession();
+  isManager=!!(data && data.session);
+  const btn=document.getElementById("authBtn");
+  const who=document.getElementById("who");
+  if(isManager){
+    btn.textContent="Log out";btn.classList.add("on");
+    who.textContent=data.session.user.email;
+  }else{
+    btn.textContent="Manager login";btn.classList.remove("on");
+    who.textContent="";
+  }
+  render();
+}
+window.onAuthBtn=async()=>{
+  if(isManager){await sb.auth.signOut();await refreshAuth();banner("Logged out.","ok");}
+  else openModal();
+};
+window.openModal=()=>{document.getElementById("modal").classList.add("show")};
+window.closeModal=()=>{document.getElementById("modal").classList.remove("show");
+  document.getElementById("lErr").textContent=""};
+window.doLogin=async()=>{
+  const le=document.getElementById("lErr");le.textContent="";
+  const email=document.getElementById("lEmail").value.trim();
+  const password=document.getElementById("lPass").value;
+  if(!email||!password){le.textContent="Enter email and password.";return}
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error){le.textContent="Sign in failed: "+error.message;return}
+  document.getElementById("lPass").value="";
+  closeModal();await refreshAuth();banner("Signed in as manager.","ok");
+};
+
+async function load(){
+  const {data,error}=await sb.from("concedii").select("*").order("created",{ascending:false});
+  if(error){banner("Read error: "+error.message,"err");return}
+  requests=data||[];
+  document.getElementById("conn").style.display="none";
+  render();
+}
+
+sb.channel("concedii-live")
+  .on("postgres_changes",{event:"*",schema:"public",table:"concedii"},load)
+  .subscribe();
+
+window.shiftMonth=n=>{view=new Date(view.getFullYear(),view.getMonth()+n,1);render()};
+window.goToday=()=>{view=new Date();render()};
+
+window.submitReq=async()=>{
+  const err=document.getElementById("err");err.textContent="";
+  const name=document.getElementById("fName").value.trim();
+  const start=document.getElementById("fStart").value;
+  const end=document.getElementById("fEnd").value;
+  const reason=document.getElementById("fReason").value.trim();
+  if(!name)return err.textContent="Enter the employee name.";
+  if(!start||!end)return err.textContent="Choose a start and end date.";
+  if(parse(end)<parse(start))return err.textContent="End date is before the start date.";
+  const {error}=await sb.from("concedii").insert({
+    name,start_date:start,end_date:end,reason,status:"pending",created:Date.now()
+  });
+  if(error){err.textContent="Could not save: "+error.message;return}
+  document.getElementById("fName").value="";document.getElementById("fStart").value="";
+  document.getElementById("fEnd").value="";document.getElementById("fReason").value="";
+  document.getElementById("dur").textContent="";
+  banner("Request submitted.","ok");load();
+};
+window.decide=async(id,status)=>{
+  const {error}=await sb.from("concedii").update({status}).eq("id",id);
+  if(error)banner("Error (are you signed in as manager?): "+error.message,"err");else load();
+};
+window.removeReq=async id=>{
+  const {error}=await sb.from("concedii").delete().eq("id",id);
+  if(error)banner("Error (are you signed in as manager?): "+error.message,"err");else load();
+};
+
+["fStart","fEnd"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{
+  const s=document.getElementById("fStart").value,e=document.getElementById("fEnd").value;
+  document.getElementById("dur").textContent=(s&&e&&parse(e)>=parse(s))?
+    `Duration: ${daysBetween(s,e)} calendar days`:"";
+}));
+
+function render(){
+  const y=view.getFullYear(),mo=view.getMonth();
+  document.getElementById("calTitle").textContent=`${MONTHS[mo]} ${y}`;
+  const byDay={};
+  requests.forEach(r=>{if(r.status==="rejected")return;
+    eachDay(r.start_date,r.end_date).forEach(d=>{(byDay[d]=byDay[d]||[]).push(r)})});
+  const off=(new Date(y,mo,1).getDay()+6)%7;
+  const dim=new Date(y,mo+1,0).getDate();
+  const today=fmt(new Date());
+  let html=DAYS.map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<off;i++)html+="<div></div>";
+  for(let d=1;d<=dim;d++){
+    const ds=fmt(new Date(y,mo,d));const ent=byDay[ds]||[];
+    let pills=ent.slice(0,3).map(r=>{const s=STATUS[r.status];
+      return `<div class="pill" title="${r.name} - ${s.label}" style="background:${s.bg};color:${s.fg};border-left:3px solid ${s.fg}">${r.name.split(" ")[0]}</div>`}).join("");
+    if(ent.length>3)pills+=`<div style="font-size:10px;color:var(--muted)">+${ent.length-3}</div>`;
+    html+=`<div class="cell${ds===today?" today":""}"><div class="dnum">${d}</div>${pills}</div>`;
+  }
+  document.getElementById("cal").innerHTML=html;
+
+  document.getElementById("listTitle").textContent=isManager?"Requests (manager)":"All requests";
+  const list=document.getElementById("list");
+  if(requests.length===0){list.innerHTML=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No requests yet.</div>`;return}
+  list.innerHTML=requests.map(r=>{const s=STATUS[r.status];
+    let actions=`<span class="status" style="color:${s.fg};background:${s.bg}">${s.label}</span>`;
+    if(isManager&&r.status==="pending"){
+      actions+=`<button class="mini" style="background:var(--sage);border-color:var(--sage)" onclick="decide('${r.id}','approved')">Approve</button>`;
+      actions+=`<button class="mini" style="background:var(--rust);border-color:var(--rust)" onclick="decide('${r.id}','rejected')">Reject</button>`;
+    }
+    if(isManager)
+      actions+=`<button class="mini" style="background:transparent;color:var(--muted);border-color:var(--line)" onclick="removeReq('${r.id}')">&#10005;</button>`;
+    return `<div class="req"><div><div style="font-weight:700;font-size:15px">${r.name}</div>
+      <div style="font-size:13px;color:var(--muted)">${enLabel(r.start_date)} - ${enLabel(r.end_date)} &middot; ${daysBetween(r.start_date,r.end_date)} days${r.reason?" &middot; "+r.reason:""}</div></div>
+      <div style="display:flex;align-items:center">${actions}</div></div>`;
+  }).join("");
+}
+
+render();
+refreshAuth();
+load();
+</script>
+</body>
+</html>
