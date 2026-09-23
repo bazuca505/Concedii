@@ -51,11 +51,6 @@
     color:#fff;margin-left:6px}
   .foot{margin-top:24px;font-size:12px;color:var(--muted);text-align:center}
   .banner{border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px;display:none}
-  .modal{position:fixed;inset:0;background:rgba(27,42,65,.45);display:none;align-items:center;
-    justify-content:center;padding:20px;z-index:10}
-  .modal.show{display:flex}
-  .modalcard{background:var(--card);border-radius:14px;padding:24px;max-width:360px;width:100%}
-  .linkbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -67,7 +62,7 @@
     </div>
     <div class="authbox">
       <span id="who" class="who"></span>
-      <button id="authBtn" class="authbtn" onclick="onAuthBtn()">Manager login</button>
+      <button id="authBtn" class="authbtn" onclick="onAuthBtn()">Sign in with Microsoft</button>
     </div>
   </div>
 
@@ -109,33 +104,31 @@
     <div id="list"></div>
   </section>
 
-  <div class="foot">Data syncs live. Approvals and deletions are allowed only for the authenticated manager.</div>
-</div>
-
-<div id="modal" class="modal">
-  <div class="modalcard">
-    <h2 style="margin-top:0">Manager sign in</h2>
-    <div style="margin-bottom:12px">
-      <label><span>Email</span><input id="lEmail" type="email" placeholder="manager@company.com" /></label>
-    </div>
-    <div>
-      <label><span>Password</span><input id="lPass" type="password" placeholder="********" /></label>
-    </div>
-    <div id="lErr" style="margin-top:10px;color:var(--rust);font-size:13px"></div>
-    <button class="primary" style="width:100%" onclick="doLogin()">Sign in</button>
-    <div style="text-align:center;margin-top:12px">
-      <button class="linkbtn" onclick="closeModal()">Cancel</button>
-    </div>
-  </div>
+  <div class="foot">Data syncs live. Sign in with your Microsoft account.</div>
 </div>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import * as msal from "https://esm.sh/@azure/msal-browser@3";
 
 const SUPABASE_URL = "https://heviandwservmtzxfrnt.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhldmlhbmR3c2Vydm10enhmcm50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ4MTksImV4cCI6MjEwNDM2MDgxOX0.CEy6M_3iOwWYHamGuJNuH5qOQaEMK9KQyZsjGwKvais";
-
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Azure / Microsoft login config ──
+const AZURE_CLIENT_ID = "97d1c507-06ef-421f-8329-7f1790f22300";
+const AZURE_TENANT_ID = "750fdea9-2dec-4867-8710-a49c355fea24";
+const REDIRECT_URI = "https://bazuca505.github.io/Concedii/";
+
+const msalApp = new msal.PublicClientApplication({
+  auth:{
+    clientId: AZURE_CLIENT_ID,
+    authority: "https://login.microsoftonline.com/" + AZURE_TENANT_ID,
+    redirectUri: REDIRECT_URI
+  },
+  cache:{ cacheLocation:"localStorage" }
+});
+let msalReady = msalApp.initialize();
 
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
@@ -145,7 +138,7 @@ const STATUS={
   rejected:{label:"Rejected",fg:"var(--rust)",bg:"var(--rustBg)"}
 };
 
-let requests=[], view=new Date(), isManager=false;
+let requests=[], view=new Date(), currentUser=null;
 
 const fmt=d=>d.toISOString().slice(0,10);
 const parse=s=>{const[y,m,dd]=s.split("-").map(Number);return new Date(y,m-1,dd)};
@@ -160,39 +153,39 @@ function banner(msg,kind){
   const map={err:["var(--rustBg)","var(--rust)"],ok:["var(--sageBg)","var(--sage)"]};
   const c=map[kind]||map.err;
   b.style.background=c[0];b.style.color=c[1];b.style.border="1px solid "+c[1];
-  if(kind==="ok")setTimeout(()=>b.style.display="none",1500);
+  if(kind==="ok")setTimeout(()=>b.style.display="none",2000);
 }
 
+// ── Microsoft auth ──
 async function refreshAuth(){
-  const {data}=await sb.auth.getSession();
-  isManager=!!(data && data.session);
+  await msalReady;
+  const accounts = msalApp.getAllAccounts();
+  currentUser = accounts.length ? accounts[0] : null;
   const btn=document.getElementById("authBtn");
   const who=document.getElementById("who");
-  if(isManager){
-    btn.textContent="Log out";btn.classList.add("on");
-    who.textContent=data.session.user.email;
+  if(currentUser){
+    btn.textContent="Sign out";btn.classList.add("on");
+    who.textContent = currentUser.name || currentUser.username;
   }else{
-    btn.textContent="Manager login";btn.classList.remove("on");
+    btn.textContent="Sign in with Microsoft";btn.classList.remove("on");
     who.textContent="";
   }
   render();
 }
 window.onAuthBtn=async()=>{
-  if(isManager){await sb.auth.signOut();await refreshAuth();banner("Logged out.","ok");}
-  else openModal();
-};
-window.openModal=()=>{document.getElementById("modal").classList.add("show")};
-window.closeModal=()=>{document.getElementById("modal").classList.remove("show");
-  document.getElementById("lErr").textContent=""};
-window.doLogin=async()=>{
-  const le=document.getElementById("lErr");le.textContent="";
-  const email=document.getElementById("lEmail").value.trim();
-  const password=document.getElementById("lPass").value;
-  if(!email||!password){le.textContent="Enter email and password.";return}
-  const {error}=await sb.auth.signInWithPassword({email,password});
-  if(error){le.textContent="Sign in failed: "+error.message;return}
-  document.getElementById("lPass").value="";
-  closeModal();await refreshAuth();banner("Signed in as manager.","ok");
+  await msalReady;
+  if(currentUser){
+    await msalApp.logoutPopup();
+    currentUser=null;await refreshAuth();banner("Signed out.","ok");
+  }else{
+    try{
+      await msalApp.loginPopup({ scopes:["User.Read"] });
+      await refreshAuth();
+      banner("Signed in as "+(currentUser?currentUser.name:"")+".","ok");
+    }catch(e){
+      banner("Sign in failed: "+(e.message||e),"err");
+    }
+  }
 };
 
 async function load(){
@@ -202,7 +195,6 @@ async function load(){
   document.getElementById("conn").style.display="none";
   render();
 }
-
 sb.channel("concedii-live")
   .on("postgres_changes",{event:"*",schema:"public",table:"concedii"},load)
   .subscribe();
@@ -227,14 +219,6 @@ window.submitReq=async()=>{
   document.getElementById("fEnd").value="";document.getElementById("fReason").value="";
   document.getElementById("dur").textContent="";
   banner("Request submitted.","ok");load();
-};
-window.decide=async(id,status)=>{
-  const {error}=await sb.from("concedii").update({status}).eq("id",id);
-  if(error)banner("Error (are you signed in as manager?): "+error.message,"err");else load();
-};
-window.removeReq=async id=>{
-  const {error}=await sb.from("concedii").delete().eq("id",id);
-  if(error)banner("Error (are you signed in as manager?): "+error.message,"err");else load();
 };
 
 ["fStart","fEnd"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{
@@ -263,17 +247,10 @@ function render(){
   }
   document.getElementById("cal").innerHTML=html;
 
-  document.getElementById("listTitle").textContent=isManager?"Requests (manager)":"All requests";
   const list=document.getElementById("list");
   if(requests.length===0){list.innerHTML=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No requests yet.</div>`;return}
   list.innerHTML=requests.map(r=>{const s=STATUS[r.status];
     let actions=`<span class="status" style="color:${s.fg};background:${s.bg}">${s.label}</span>`;
-    if(isManager&&r.status==="pending"){
-      actions+=`<button class="mini" style="background:var(--sage);border-color:var(--sage)" onclick="decide('${r.id}','approved')">Approve</button>`;
-      actions+=`<button class="mini" style="background:var(--rust);border-color:var(--rust)" onclick="decide('${r.id}','rejected')">Reject</button>`;
-    }
-    if(isManager)
-      actions+=`<button class="mini" style="background:transparent;color:var(--muted);border-color:var(--line)" onclick="removeReq('${r.id}')">&#10005;</button>`;
     return `<div class="req"><div><div style="font-weight:700;font-size:15px">${r.name}</div>
       <div style="font-size:13px;color:var(--muted)">${enLabel(r.start_date)} - ${enLabel(r.end_date)} &middot; ${daysBetween(r.start_date,r.end_date)} days${r.reason?" &middot; "+r.reason:""}</div></div>
       <div style="display:flex;align-items:center">${actions}</div></div>`;
