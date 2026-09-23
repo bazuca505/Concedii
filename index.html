@@ -23,7 +23,9 @@
   .authbtn{padding:9px 16px;border:1px solid var(--ink);border-radius:8px;background:var(--card);
     color:var(--ink);cursor:pointer;font-size:14px;font-weight:600}
   .authbtn.on{background:var(--ink);color:var(--paper)}
-  .who{font-size:13px;color:var(--muted)}
+  .who{font-size:13px;color:var(--muted);text-align:right}
+  .who b{color:var(--ink)}
+  .role{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--sage);font-weight:700}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:24px}
   label span{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
   input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;
@@ -51,6 +53,8 @@
     color:#fff;margin-left:6px}
   .foot{margin-top:24px;font-size:12px;color:var(--muted);text-align:center}
   .banner{border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px;display:none}
+  .tag{font-size:11px;color:var(--muted);margin-left:6px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
 </style>
 </head>
 <body>
@@ -68,19 +72,21 @@
 
   <div id="conn" class="banner"></div>
 
-  <section id="formCard" class="card">
+  <section id="formCard" class="card" style="display:none">
     <h2>Leave request</h2>
     <div class="grid">
-      <label><span>Employee name</span><input id="fName" placeholder="e.g. Jane Doe" /></label>
       <label><span>From</span><input id="fStart" type="date" /></label>
       <label><span>To</span><input id="fEnd" type="date" /></label>
-    </div>
-    <div style="margin-top:12px">
       <label><span>Reason (optional)</span><input id="fReason" placeholder="e.g. Annual leave" /></label>
     </div>
     <div id="dur" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
     <div id="err" style="margin-top:10px;color:var(--rust);font-size:13px"></div>
     <button class="primary" onclick="submitReq()">Submit request</button>
+  </section>
+
+  <section id="signinPrompt" class="card">
+    <h2>Welcome</h2>
+    <div style="color:var(--muted);font-size:14px">Sign in with your Microsoft account to request leave or, if you are a manager, to review your team's requests.</div>
   </section>
 
   <section class="card">
@@ -99,12 +105,12 @@
     </div>
   </section>
 
-  <section class="card">
-    <h2 id="listTitle">All requests</h2>
+  <section id="listCard" class="card" style="display:none">
+    <h2 id="listTitle">Requests</h2>
     <div id="list"></div>
   </section>
 
-  <div class="foot">Data syncs live. Sign in with your Microsoft account.</div>
+  <div class="foot">Data syncs live. Roles and team come from your organization's Microsoft directory.</div>
 </div>
 
 <script type="module">
@@ -115,7 +121,6 @@ const SUPABASE_URL = "https://heviandwservmtzxfrnt.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhldmlhbmR3c2Vydm10enhmcm50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ4MTksImV4cCI6MjEwNDM2MDgxOX0.CEy6M_3iOwWYHamGuJNuH5qOQaEMK9KQyZsjGwKvais";
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── Azure / Microsoft login config ──
 const AZURE_CLIENT_ID = "97d1c507-06ef-421f-8329-7f1790f22300";
 const AZURE_TENANT_ID = "750fdea9-2dec-4867-8710-a49c355fea24";
 const REDIRECT_URI = "https://bazuca505.github.io/Concedii/";
@@ -130,6 +135,8 @@ const msalApp = new msal.PublicClientApplication({
 });
 let msalReady = msalApp.initialize();
 
+const GRAPH_SCOPES = ["User.Read","User.Read.All"];
+
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const STATUS={
@@ -138,7 +145,10 @@ const STATUS={
   rejected:{label:"Rejected",fg:"var(--rust)",bg:"var(--rustBg)"}
 };
 
-let requests=[], view=new Date(), currentUser=null;
+let requests=[], view=new Date();
+let me=null;            // {name, email}
+let myReports=[];       // array of subordinate emails (lowercase)
+let isManager=false;
 
 const fmt=d=>d.toISOString().slice(0,10);
 const parse=s=>{const[y,m,dd]=s.split("-").map(Number);return new Date(y,m-1,dd)};
@@ -153,35 +163,82 @@ function banner(msg,kind){
   const map={err:["var(--rustBg)","var(--rust)"],ok:["var(--sageBg)","var(--sage)"]};
   const c=map[kind]||map.err;
   b.style.background=c[0];b.style.color=c[1];b.style.border="1px solid "+c[1];
-  if(kind==="ok")setTimeout(()=>b.style.display="none",2000);
+  if(kind==="ok")setTimeout(()=>b.style.display="none",2500);
 }
 
-// ── Microsoft auth ──
+// ── Get a Microsoft Graph access token silently (or via popup) ──
+async function getToken(){
+  await msalReady;
+  const account = msalApp.getAllAccounts()[0];
+  if(!account) return null;
+  try{
+    const r = await msalApp.acquireTokenSilent({ scopes:GRAPH_SCOPES, account });
+    return r.accessToken;
+  }catch(e){
+    const r = await msalApp.acquireTokenPopup({ scopes:GRAPH_SCOPES, account });
+    return r.accessToken;
+  }
+}
+
+async function graph(path, token){
+  const res = await fetch("https://graph.microsoft.com/v1.0"+path, {
+    headers:{ Authorization:"Bearer "+token }
+  });
+  if(!res.ok) throw new Error("Graph "+res.status);
+  return res.json();
+}
+
+// ── After login: read who I am + my direct reports from Azure ──
+async function loadIdentity(){
+  const token = await getToken();
+  if(!token){ me=null; myReports=[]; isManager=false; return; }
+  const profile = await graph("/me?$select=displayName,mail,userPrincipalName", token);
+  me = {
+    name: profile.displayName,
+    email: (profile.mail || profile.userPrincipalName || "").toLowerCase()
+  };
+  try{
+    const rep = await graph("/me/directReports?$select=mail,userPrincipalName", token);
+    myReports = (rep.value||[]).map(u => (u.mail||u.userPrincipalName||"").toLowerCase()).filter(Boolean);
+  }catch(e){ myReports=[]; }
+  isManager = myReports.length > 0;
+}
+
 async function refreshAuth(){
   await msalReady;
   const accounts = msalApp.getAllAccounts();
-  currentUser = accounts.length ? accounts[0] : null;
   const btn=document.getElementById("authBtn");
   const who=document.getElementById("who");
-  if(currentUser){
+  if(accounts.length){
+    try{ await loadIdentity(); }
+    catch(e){ banner("Could not read directory: "+(e.message||e),"err"); }
     btn.textContent="Sign out";btn.classList.add("on");
-    who.textContent = currentUser.name || currentUser.username;
+    who.innerHTML = `<b>${me?me.name:accounts[0].name}</b><br><span class="role">${isManager?("Manager · "+myReports.length+" reports"):"Employee"}</span>`;
+    document.getElementById("signinPrompt").style.display="none";
+    document.getElementById("formCard").style.display="block";
+    document.getElementById("listCard").style.display="block";
   }else{
+    me=null;myReports=[];isManager=false;
     btn.textContent="Sign in with Microsoft";btn.classList.remove("on");
     who.textContent="";
+    document.getElementById("signinPrompt").style.display="block";
+    document.getElementById("formCard").style.display="none";
+    document.getElementById("listCard").style.display="none";
   }
   render();
 }
+
 window.onAuthBtn=async()=>{
   await msalReady;
-  if(currentUser){
+  const account = msalApp.getAllAccounts()[0];
+  if(account){
     await msalApp.logoutPopup();
-    currentUser=null;await refreshAuth();banner("Signed out.","ok");
+    await refreshAuth();banner("Signed out.","ok");
   }else{
     try{
-      await msalApp.loginPopup({ scopes:["User.Read"] });
+      await msalApp.loginPopup({ scopes:GRAPH_SCOPES });
       await refreshAuth();
-      banner("Signed in as "+(currentUser?currentUser.name:"")+".","ok");
+      banner("Signed in as "+(me?me.name:"")+".","ok");
     }catch(e){
       banner("Sign in failed: "+(e.message||e),"err");
     }
@@ -204,21 +261,25 @@ window.goToday=()=>{view=new Date();render()};
 
 window.submitReq=async()=>{
   const err=document.getElementById("err");err.textContent="";
-  const name=document.getElementById("fName").value.trim();
+  if(!me){err.textContent="Please sign in first.";return}
   const start=document.getElementById("fStart").value;
   const end=document.getElementById("fEnd").value;
   const reason=document.getElementById("fReason").value.trim();
-  if(!name)return err.textContent="Enter the employee name.";
   if(!start||!end)return err.textContent="Choose a start and end date.";
   if(parse(end)<parse(start))return err.textContent="End date is before the start date.";
   const {error}=await sb.from("concedii").insert({
-    name,start_date:start,end_date:end,reason,status:"pending",created:Date.now()
+    name: me.name, requester_email: me.email,
+    start_date:start,end_date:end,reason,status:"pending",created:Date.now()
   });
   if(error){err.textContent="Could not save: "+error.message;return}
-  document.getElementById("fName").value="";document.getElementById("fStart").value="";
+  document.getElementById("fStart").value="";
   document.getElementById("fEnd").value="";document.getElementById("fReason").value="";
   document.getElementById("dur").textContent="";
   banner("Request submitted.","ok");load();
+};
+window.decide=async(id,status)=>{
+  const {error}=await sb.from("concedii").update({status}).eq("id",id);
+  if(error)banner("Error: "+error.message,"err");else load();
 };
 
 ["fStart","fEnd"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{
@@ -226,6 +287,18 @@ window.submitReq=async()=>{
   document.getElementById("dur").textContent=(s&&e&&parse(e)>=parse(s))?
     `Duration: ${daysBetween(s,e)} calendar days`:"";
 }));
+
+function visibleRequests(){
+  if(isManager){
+    // manager sees their team's requests (by email) plus their own
+    return requests.filter(r=>{
+      const em=(r.requester_email||"").toLowerCase();
+      return myReports.includes(em) || (me && em===me.email);
+    });
+  }
+  // employee sees all (calendar is shared); list below shows their own
+  return requests;
+}
 
 function render(){
   const y=view.getFullYear(),mo=view.getMonth();
@@ -241,17 +314,24 @@ function render(){
   for(let d=1;d<=dim;d++){
     const ds=fmt(new Date(y,mo,d));const ent=byDay[ds]||[];
     let pills=ent.slice(0,3).map(r=>{const s=STATUS[r.status];
-      return `<div class="pill" title="${r.name} - ${s.label}" style="background:${s.bg};color:${s.fg};border-left:3px solid ${s.fg}">${r.name.split(" ")[0]}</div>`}).join("");
+      return `<div class="pill" title="${r.name} - ${s.label}" style="background:${s.bg};color:${s.fg};border-left:3px solid ${s.fg}">${(r.name||"").split(" ")[0]}</div>`}).join("");
     if(ent.length>3)pills+=`<div style="font-size:10px;color:var(--muted)">+${ent.length-3}</div>`;
     html+=`<div class="cell${ds===today?" today":""}"><div class="dnum">${d}</div>${pills}</div>`;
   }
   document.getElementById("cal").innerHTML=html;
 
+  document.getElementById("listTitle").textContent = isManager ? "Your team's requests" : "Your requests";
   const list=document.getElementById("list");
-  if(requests.length===0){list.innerHTML=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No requests yet.</div>`;return}
-  list.innerHTML=requests.map(r=>{const s=STATUS[r.status];
+  let shown = visibleRequests();
+  if(!isManager && me){ shown = shown.filter(r=>(r.requester_email||"").toLowerCase()===me.email); }
+  if(shown.length===0){list.innerHTML=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No requests yet.</div>`;return}
+  list.innerHTML=shown.map(r=>{const s=STATUS[r.status];
     let actions=`<span class="status" style="color:${s.fg};background:${s.bg}">${s.label}</span>`;
-    return `<div class="req"><div><div style="font-weight:700;font-size:15px">${r.name}</div>
+    if(isManager && r.status==="pending" && (r.requester_email||"").toLowerCase()!==(me?me.email:"")){
+      actions+=`<button class="mini" style="background:var(--sage);border-color:var(--sage)" onclick="decide('${r.id}','approved')">Approve</button>`;
+      actions+=`<button class="mini" style="background:var(--rust);border-color:var(--rust)" onclick="decide('${r.id}','rejected')">Reject</button>`;
+    }
+    return `<div class="req"><div><div style="font-weight:700;font-size:15px">${r.name||""}</div>
       <div style="font-size:13px;color:var(--muted)">${enLabel(r.start_date)} - ${enLabel(r.end_date)} &middot; ${daysBetween(r.start_date,r.end_date)} days${r.reason?" &middot; "+r.reason:""}</div></div>
       <div style="display:flex;align-items:center">${actions}</div></div>`;
   }).join("");
