@@ -11,50 +11,57 @@
     --rust:#9E4A3B; --rustBg:#F3E1DD; --muted:#7A7568;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);
-    font-family:'Segoe UI',system-ui,sans-serif}
-  .wrap{max-width:960px;margin:0 auto;padding:28px 20px 60px}
-  .head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;
-    gap:16px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Segoe UI',system-ui,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:16px}
   .eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
   h1{font-family:Georgia,serif;font-size:34px;margin:4px 0 0;font-weight:700}
   h2{font-family:Georgia,serif;font-size:20px;margin:0 0 14px}
   .authbox{display:flex;align-items:center;gap:10px}
-  .authbtn{padding:9px 16px;border:1px solid var(--ink);border-radius:8px;background:var(--card);
-    color:var(--ink);cursor:pointer;font-size:14px;font-weight:600}
+  .authbtn{padding:9px 16px;border:1px solid var(--ink);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer;font-size:14px;font-weight:600}
   .authbtn.on{background:var(--ink);color:var(--paper)}
   .who{font-size:13px;color:var(--muted);text-align:right}
   .who b{color:var(--ink)}
   .role{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--sage);font-weight:700}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:24px}
   label span{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
-  input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;
-    background:var(--paper);color:var(--ink)}
+  input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--paper);color:var(--ink)}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
-  .primary{margin-top:16px;padding:11px 20px;background:var(--ink);color:var(--paper);border:none;
-    border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-  .nav button{padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);
-    color:var(--ink);cursor:pointer;font-size:14px;font-weight:600;margin-left:8px}
+  .primary{margin-top:16px;padding:11px 20px;background:var(--ink);color:var(--paper);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+  .nav button{padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer;font-size:14px;font-weight:600;margin-left:8px}
   .nav button.today{background:var(--ink);color:var(--paper)}
   .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-  .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:4px 0;
-    text-transform:uppercase;letter-spacing:1px}
+  .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:4px 0;text-transform:uppercase;letter-spacing:1px}
   .cell{min-height:74px;border:1px solid var(--line);border-radius:8px;padding:5px;background:var(--card)}
   .cell.today{border-color:var(--ink)}
   .dnum{font-size:12px;color:var(--muted)}
-  .pill{font-size:10px;border-radius:4px;padding:1px 4px;margin-top:2px;white-space:nowrap;
-    overflow:hidden;text-overflow:ellipsis}
+  .pill{font-size:10px;border-radius:4px;padding:1px 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .legend{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);align-items:center}
   .swatch{width:12px;height:12px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle}
-  .req{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;
-    border:1px solid var(--line);border-radius:10px;flex-wrap:wrap;margin-bottom:10px}
+  .req{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;flex-wrap:wrap;margin-bottom:10px}
   .status{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px}
-  .mini{padding:6px 12px;border-radius:8px;border:1px solid;cursor:pointer;font-size:13px;font-weight:600;
-    color:#fff;margin-left:6px}
+  .mini{padding:6px 12px;border-radius:8px;border:1px solid;cursor:pointer;font-size:13px;font-weight:600;color:#fff;margin-left:6px}
   .foot{margin-top:24px;font-size:12px;color:var(--muted);text-align:center}
   .banner{border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px;display:none}
-  .tag{font-size:11px;color:var(--muted);margin-left:6px}
-  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  /* dashboard */
+  .gridtbl{overflow-x:auto}
+  table.grid-cal{border-collapse:collapse;font-size:12px;width:100%;min-width:720px}
+  table.grid-cal th,table.grid-cal td{border:1px solid var(--line);text-align:center;padding:0}
+  table.grid-cal th.name,table.grid-cal td.name{text-align:left;padding:6px 10px;white-space:nowrap;position:sticky;left:0;background:var(--card);font-weight:600;min-width:150px}
+  table.grid-cal th{background:var(--paper);font-weight:700;color:var(--muted);height:28px;width:26px}
+  table.grid-cal th.we,table.grid-cal td.we{background:#F0EDE6}
+  table.grid-cal td{height:30px;width:26px}
+  .d-approved{background:var(--sage)}
+  .d-pending{background:var(--amber)}
+  .sumtbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  .sumtbl th,.sumtbl td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left}
+  .sumtbl th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .sumtbl td.num,.sumtbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .alloc-input{width:64px;padding:5px 8px;text-align:right}
+  .neg{color:var(--rust);font-weight:700}
+  .tabs{display:flex;gap:8px;margin:18px 0 0}
+  .tab{padding:8px 14px;border:1px solid var(--line);border-radius:8px 8px 0 0;background:var(--paper);cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+  .tab.on{background:var(--card);color:var(--ink);border-bottom-color:var(--card)}
 </style>
 </head>
 <body>
@@ -72,6 +79,11 @@
 
   <div id="conn" class="banner"></div>
 
+  <section id="signinPrompt" class="card">
+    <h2>Welcome</h2>
+    <div style="color:var(--muted);font-size:14px">Sign in with your Microsoft account to request leave or, if you are a manager, to review your team.</div>
+  </section>
+
   <section id="formCard" class="card" style="display:none">
     <h2>Leave request</h2>
     <div class="grid">
@@ -82,11 +94,6 @@
     <div id="dur" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
     <div id="err" style="margin-top:10px;color:var(--rust);font-size:13px"></div>
     <button class="primary" onclick="submitReq()">Submit request</button>
-  </section>
-
-  <section id="signinPrompt" class="card">
-    <h2>Welcome</h2>
-    <div style="color:var(--muted);font-size:14px">Sign in with your Microsoft account to request leave or, if you are a manager, to review your team's requests.</div>
   </section>
 
   <section class="card">
@@ -110,6 +117,51 @@
     <div id="list"></div>
   </section>
 
+  <!-- MANAGER DASHBOARD -->
+  <section id="dashCard" class="card" style="display:none">
+    <h2 style="margin-bottom:4px">Team dashboard</h2>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Working days only (Mon–Fri). Taken = approved leave.</div>
+
+    <div class="tabs">
+      <div id="tabMonth" class="tab on" onclick="setDashTab('month')">Monthly grid</div>
+      <div id="tabYear" class="tab" onclick="setDashTab('year')">Yearly balance</div>
+    </div>
+
+    <!-- Monthly grid tab -->
+    <div id="dashMonth" class="card" style="margin-top:0;border-top-left-radius:0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <strong id="gridMonthTitle"></strong>
+        <div class="nav">
+          <button onclick="shiftDashMonth(-1)">&lsaquo;</button>
+          <button class="today" onclick="dashToday()">This month</button>
+          <button onclick="shiftDashMonth(1)">&rsaquo;</button>
+        </div>
+      </div>
+      <div class="gridtbl"><table class="grid-cal" id="gridTable"></table></div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--sage)"></span>Approved</span>
+        <span><span class="swatch" style="background:var(--amber)"></span>Pending</span>
+        <span><span class="swatch" style="background:#F0EDE6"></span>Weekend</span>
+      </div>
+      <h2 style="font-size:16px;margin:20px 0 6px">This month — days taken</h2>
+      <table class="sumtbl" id="monthSum"></table>
+    </div>
+
+    <!-- Yearly balance tab -->
+    <div id="dashYear" class="card" style="margin-top:0;border-top-left-radius:0;display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <strong id="yearTitle"></strong>
+        <div class="nav">
+          <button onclick="shiftYear(-1)">&lsaquo;</button>
+          <button class="today" onclick="yearToday()">This year</button>
+          <button onclick="shiftYear(1)">&rsaquo;</button>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Set each person's annual allowance. Remaining = allocated − taken (approved).</div>
+      <table class="sumtbl" id="yearSum"></table>
+    </div>
+  </section>
+
   <div class="foot">Data syncs live. Roles and team come from your organization's Microsoft directory.</div>
 </div>
 
@@ -126,15 +178,10 @@ const AZURE_TENANT_ID = "750fdea9-2dec-4867-8710-a49c355fea24";
 const REDIRECT_URI = "https://bazuca505.github.io/Concedii/";
 
 const msalApp = new msal.PublicClientApplication({
-  auth:{
-    clientId: AZURE_CLIENT_ID,
-    authority: "https://login.microsoftonline.com/" + AZURE_TENANT_ID,
-    redirectUri: REDIRECT_URI
-  },
+  auth:{ clientId: AZURE_CLIENT_ID, authority:"https://login.microsoftonline.com/"+AZURE_TENANT_ID, redirectUri: REDIRECT_URI },
   cache:{ cacheLocation:"localStorage" }
 });
 let msalReady = msalApp.initialize();
-
 const GRAPH_SCOPES = ["User.Read","User.Read.All"];
 
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -145,201 +192,236 @@ const STATUS={
   rejected:{label:"Rejected",fg:"var(--rust)",bg:"var(--rustBg)"}
 };
 
-let requests=[], view=new Date();
-let me=null;            // {name, email}
-let myReports=[];       // array of subordinate emails (lowercase)
-let isManager=false;
+let requests=[], allocations=[], view=new Date();
+let dashView=new Date(), dashYear=new Date().getFullYear(), dashTab="month";
+let me=null, myReports=[], teamMap={}, isManager=false;
 
 const fmt=d=>d.toISOString().slice(0,10);
 const parse=s=>{const[y,m,dd]=s.split("-").map(Number);return new Date(y,m-1,dd)};
 const enLabel=s=>{const d=parse(s);return `${MONTHS[d.getMonth()].slice(0,3)} ${d.getDate()}`};
 const daysBetween=(a,b)=>Math.round((parse(b)-parse(a))/864e5)+1;
-function eachDay(a,b){const out=[];let d=parse(a),e=parse(b);
-  while(d<=e){out.push(fmt(d));d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)}return out}
+const isWeekend=d=>{const g=d.getDay();return g===0||g===6};
+function eachDay(a,b){const out=[];let d=parse(a),e=parse(b);while(d<=e){out.push(fmt(d));d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)}return out}
+// count working days of a request that fall within [rangeStart,rangeEnd] inclusive
+function workingDaysInRange(r, rangeStart, rangeEnd){
+  let c=0; let d=parse(r.start_date), e=parse(r.end_date);
+  while(d<=e){ if(d>=rangeStart && d<=rangeEnd && !isWeekend(d)) c++; d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1);} return c;
+}
 
 function banner(msg,kind){
-  const b=document.getElementById("conn");
-  b.style.display="block";b.textContent=msg;
+  const b=document.getElementById("conn");b.style.display="block";b.textContent=msg;
   const map={err:["var(--rustBg)","var(--rust)"],ok:["var(--sageBg)","var(--sage)"]};
-  const c=map[kind]||map.err;
-  b.style.background=c[0];b.style.color=c[1];b.style.border="1px solid "+c[1];
+  const c=map[kind]||map.err;b.style.background=c[0];b.style.color=c[1];b.style.border="1px solid "+c[1];
   if(kind==="ok")setTimeout(()=>b.style.display="none",2500);
 }
 
-// ── Get a Microsoft Graph access token silently (or via popup) ──
 async function getToken(){
-  await msalReady;
-  const account = msalApp.getAllAccounts()[0];
-  if(!account) return null;
-  try{
-    const r = await msalApp.acquireTokenSilent({ scopes:GRAPH_SCOPES, account });
-    return r.accessToken;
-  }catch(e){
-    const r = await msalApp.acquireTokenPopup({ scopes:GRAPH_SCOPES, account });
-    return r.accessToken;
-  }
+  await msalReady;const account=msalApp.getAllAccounts()[0];if(!account)return null;
+  try{const r=await msalApp.acquireTokenSilent({scopes:GRAPH_SCOPES,account});return r.accessToken;}
+  catch(e){const r=await msalApp.acquireTokenPopup({scopes:GRAPH_SCOPES,account});return r.accessToken;}
 }
-
-async function graph(path, token){
-  const res = await fetch("https://graph.microsoft.com/v1.0"+path, {
-    headers:{ Authorization:"Bearer "+token }
-  });
-  if(!res.ok) throw new Error("Graph "+res.status);
-  return res.json();
+async function graph(path,token){
+  const res=await fetch("https://graph.microsoft.com/v1.0"+path,{headers:{Authorization:"Bearer "+token}});
+  if(!res.ok)throw new Error("Graph "+res.status);return res.json();
 }
-
-// ── After login: read who I am + my direct reports from Azure ──
 async function loadIdentity(){
-  const token = await getToken();
-  if(!token){ me=null; myReports=[]; isManager=false; return; }
-  const profile = await graph("/me?$select=displayName,mail,userPrincipalName", token);
-  me = {
-    name: profile.displayName,
-    email: (profile.mail || profile.userPrincipalName || "").toLowerCase()
-  };
+  const token=await getToken();if(!token){me=null;myReports=[];isManager=false;teamMap={};return;}
+  const p=await graph("/me?$select=displayName,mail,userPrincipalName",token);
+  me={name:p.displayName,email:(p.mail||p.userPrincipalName||"").toLowerCase()};
+  teamMap={};
   try{
-    const rep = await graph("/me/directReports?$select=mail,userPrincipalName", token);
-    myReports = (rep.value||[]).map(u => (u.mail||u.userPrincipalName||"").toLowerCase()).filter(Boolean);
-  }catch(e){ myReports=[]; }
-  isManager = myReports.length > 0;
+    const rep=await graph("/me/directReports?$select=displayName,mail,userPrincipalName",token);
+    myReports=(rep.value||[]).map(u=>{const em=(u.mail||u.userPrincipalName||"").toLowerCase();teamMap[em]=u.displayName;return em;}).filter(Boolean);
+  }catch(e){myReports=[];}
+  isManager=myReports.length>0;
 }
 
 async function refreshAuth(){
-  await msalReady;
-  const accounts = msalApp.getAllAccounts();
-  const btn=document.getElementById("authBtn");
-  const who=document.getElementById("who");
+  await msalReady;const accounts=msalApp.getAllAccounts();
+  const btn=document.getElementById("authBtn"),who=document.getElementById("who");
   if(accounts.length){
-    try{ await loadIdentity(); }
-    catch(e){ banner("Could not read directory: "+(e.message||e),"err"); }
+    try{await loadIdentity();}catch(e){banner("Could not read directory: "+(e.message||e),"err");}
     btn.textContent="Sign out";btn.classList.add("on");
-    who.innerHTML = `<b>${me?me.name:accounts[0].name}</b><br><span class="role">${isManager?("Manager · "+myReports.length+" reports"):"Employee"}</span>`;
+    who.innerHTML=`<b>${me?me.name:accounts[0].name}</b><br><span class="role">${isManager?("Manager · "+myReports.length+" reports"):"Employee"}</span>`;
     document.getElementById("signinPrompt").style.display="none";
     document.getElementById("formCard").style.display="block";
     document.getElementById("listCard").style.display="block";
+    document.getElementById("dashCard").style.display=isManager?"block":"none";
+    if(isManager) await loadAllocations();
   }else{
-    me=null;myReports=[];isManager=false;
-    btn.textContent="Sign in with Microsoft";btn.classList.remove("on");
-    who.textContent="";
+    me=null;myReports=[];isManager=false;teamMap={};
+    btn.textContent="Sign in with Microsoft";btn.classList.remove("on");who.textContent="";
     document.getElementById("signinPrompt").style.display="block";
     document.getElementById("formCard").style.display="none";
     document.getElementById("listCard").style.display="none";
+    document.getElementById("dashCard").style.display="none";
   }
   render();
 }
 
 window.onAuthBtn=async()=>{
-  await msalReady;
-  const account = msalApp.getAllAccounts()[0];
-  if(account){
-    await msalApp.logoutPopup();
-    await refreshAuth();banner("Signed out.","ok");
-  }else{
-    try{
-      await msalApp.loginPopup({ scopes:GRAPH_SCOPES });
-      await refreshAuth();
-      banner("Signed in as "+(me?me.name:"")+".","ok");
-    }catch(e){
-      banner("Sign in failed: "+(e.message||e),"err");
-    }
-  }
+  await msalReady;const account=msalApp.getAllAccounts()[0];
+  if(account){await msalApp.logoutPopup();await refreshAuth();banner("Signed out.","ok");}
+  else{try{await msalApp.loginPopup({scopes:GRAPH_SCOPES});await refreshAuth();banner("Signed in as "+(me?me.name:"")+".","ok");}
+  catch(e){banner("Sign in failed: "+(e.message||e),"err");}}
 };
 
 async function load(){
   const {data,error}=await sb.from("concedii").select("*").order("created",{ascending:false});
   if(error){banner("Read error: "+error.message,"err");return}
-  requests=data||[];
-  document.getElementById("conn").style.display="none";
-  render();
+  requests=data||[];document.getElementById("conn").style.display="none";render();
 }
-sb.channel("concedii-live")
-  .on("postgres_changes",{event:"*",schema:"public",table:"concedii"},load)
-  .subscribe();
+async function loadAllocations(){
+  const {data,error}=await sb.from("allocations").select("*");
+  if(!error) allocations=data||[];
+}
+sb.channel("concedii-live").on("postgres_changes",{event:"*",schema:"public",table:"concedii"},load).subscribe();
 
 window.shiftMonth=n=>{view=new Date(view.getFullYear(),view.getMonth()+n,1);render()};
 window.goToday=()=>{view=new Date();render()};
+window.shiftDashMonth=n=>{dashView=new Date(dashView.getFullYear(),dashView.getMonth()+n,1);renderDash()};
+window.dashToday=()=>{dashView=new Date();renderDash()};
+window.shiftYear=n=>{dashYear+=n;renderDash()};
+window.yearToday=()=>{dashYear=new Date().getFullYear();renderDash()};
+window.setDashTab=t=>{dashTab=t;
+  document.getElementById("tabMonth").classList.toggle("on",t==="month");
+  document.getElementById("tabYear").classList.toggle("on",t==="year");
+  document.getElementById("dashMonth").style.display=t==="month"?"block":"none";
+  document.getElementById("dashYear").style.display=t==="year"?"block":"none";
+  renderDash();
+};
 
 window.submitReq=async()=>{
   const err=document.getElementById("err");err.textContent="";
   if(!me){err.textContent="Please sign in first.";return}
-  const start=document.getElementById("fStart").value;
-  const end=document.getElementById("fEnd").value;
-  const reason=document.getElementById("fReason").value.trim();
+  const start=document.getElementById("fStart").value,end=document.getElementById("fEnd").value,reason=document.getElementById("fReason").value.trim();
   if(!start||!end)return err.textContent="Choose a start and end date.";
   if(parse(end)<parse(start))return err.textContent="End date is before the start date.";
-  const {error}=await sb.from("concedii").insert({
-    name: me.name, requester_email: me.email,
-    start_date:start,end_date:end,reason,status:"pending",created:Date.now()
-  });
+  const {error}=await sb.from("concedii").insert({name:me.name,requester_email:me.email,start_date:start,end_date:end,reason,status:"pending",created:Date.now()});
   if(error){err.textContent="Could not save: "+error.message;return}
-  document.getElementById("fStart").value="";
-  document.getElementById("fEnd").value="";document.getElementById("fReason").value="";
-  document.getElementById("dur").textContent="";
+  document.getElementById("fStart").value="";document.getElementById("fEnd").value="";document.getElementById("fReason").value="";document.getElementById("dur").textContent="";
   banner("Request submitted.","ok");load();
 };
-window.decide=async(id,status)=>{
-  const {error}=await sb.from("concedii").update({status}).eq("id",id);
-  if(error)banner("Error: "+error.message,"err");else load();
+window.decide=async(id,status)=>{const {error}=await sb.from("concedii").update({status}).eq("id",id);if(error)banner("Error: "+error.message,"err");else load();};
+
+window.saveAlloc=async(email,year,val)=>{
+  const total=parseInt(val,10); if(isNaN(total)||total<0){banner("Enter a valid number.","err");return;}
+  const {error}=await sb.from("allocations").upsert({email,year,total_days:total},{onConflict:"email,year"});
+  if(error){banner("Could not save allowance: "+error.message,"err");return;}
+  const ex=allocations.find(a=>a.email===email&&a.year===year);
+  if(ex)ex.total_days=total;else allocations.push({email,year,total_days:total});
+  banner("Allowance saved.","ok");renderDash();
 };
 
 ["fStart","fEnd"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{
   const s=document.getElementById("fStart").value,e=document.getElementById("fEnd").value;
-  document.getElementById("dur").textContent=(s&&e&&parse(e)>=parse(s))?
-    `Duration: ${daysBetween(s,e)} calendar days`:"";
+  document.getElementById("dur").textContent=(s&&e&&parse(e)>=parse(s))?`Duration: ${daysBetween(s,e)} calendar days`:"";
 }));
 
-function visibleRequests(){
-  if(isManager){
-    // manager sees their team's requests (by email) plus their own
-    return requests.filter(r=>{
-      const em=(r.requester_email||"").toLowerCase();
-      return myReports.includes(em) || (me && em===me.email);
-    });
-  }
-  // employee sees all (calendar is shared); list below shows their own
-  return requests;
-}
-
 function render(){
+  // shared calendar
   const y=view.getFullYear(),mo=view.getMonth();
   document.getElementById("calTitle").textContent=`${MONTHS[mo]} ${y}`;
   const byDay={};
-  requests.forEach(r=>{if(r.status==="rejected")return;
-    eachDay(r.start_date,r.end_date).forEach(d=>{(byDay[d]=byDay[d]||[]).push(r)})});
-  const off=(new Date(y,mo,1).getDay()+6)%7;
-  const dim=new Date(y,mo+1,0).getDate();
-  const today=fmt(new Date());
+  requests.forEach(r=>{if(r.status==="rejected")return;eachDay(r.start_date,r.end_date).forEach(d=>{(byDay[d]=byDay[d]||[]).push(r)})});
+  const off=(new Date(y,mo,1).getDay()+6)%7,dim=new Date(y,mo+1,0).getDate(),today=fmt(new Date());
   let html=DAYS.map(d=>`<div class="dow">${d}</div>`).join("");
   for(let i=0;i<off;i++)html+="<div></div>";
   for(let d=1;d<=dim;d++){
     const ds=fmt(new Date(y,mo,d));const ent=byDay[ds]||[];
-    let pills=ent.slice(0,3).map(r=>{const s=STATUS[r.status];
-      return `<div class="pill" title="${r.name} - ${s.label}" style="background:${s.bg};color:${s.fg};border-left:3px solid ${s.fg}">${(r.name||"").split(" ")[0]}</div>`}).join("");
+    let pills=ent.slice(0,3).map(r=>{const s=STATUS[r.status];return `<div class="pill" title="${r.name} - ${s.label}" style="background:${s.bg};color:${s.fg};border-left:3px solid ${s.fg}">${(r.name||"").split(" ")[0]}</div>`}).join("");
     if(ent.length>3)pills+=`<div style="font-size:10px;color:var(--muted)">+${ent.length-3}</div>`;
     html+=`<div class="cell${ds===today?" today":""}"><div class="dnum">${d}</div>${pills}</div>`;
   }
   document.getElementById("cal").innerHTML=html;
 
-  document.getElementById("listTitle").textContent = isManager ? "Your team's requests" : "Your requests";
+  // request list
+  document.getElementById("listTitle").textContent=isManager?"Your team's requests":"Your requests";
   const list=document.getElementById("list");
-  let shown = visibleRequests();
-  if(!isManager && me){ shown = shown.filter(r=>(r.requester_email||"").toLowerCase()===me.email); }
-  if(shown.length===0){list.innerHTML=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No requests yet.</div>`;return}
-  list.innerHTML=shown.map(r=>{const s=STATUS[r.status];
+  let shown=requests;
+  if(isManager){shown=requests.filter(r=>{const em=(r.requester_email||"").toLowerCase();return myReports.includes(em)||(me&&em===me.email);});}
+  else if(me){shown=requests.filter(r=>(r.requester_email||"").toLowerCase()===me.email);}
+  if(shown.length===0){list.innerHTML=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No requests yet.</div>`;}
+  else list.innerHTML=shown.map(r=>{const s=STATUS[r.status];
     let actions=`<span class="status" style="color:${s.fg};background:${s.bg}">${s.label}</span>`;
-    if(isManager && r.status==="pending" && (r.requester_email||"").toLowerCase()!==(me?me.email:"")){
+    if(isManager&&r.status==="pending"&&(r.requester_email||"").toLowerCase()!==(me?me.email:"")){
       actions+=`<button class="mini" style="background:var(--sage);border-color:var(--sage)" onclick="decide('${r.id}','approved')">Approve</button>`;
-      actions+=`<button class="mini" style="background:var(--rust);border-color:var(--rust)" onclick="decide('${r.id}','rejected')">Reject</button>`;
-    }
+      actions+=`<button class="mini" style="background:var(--rust);border-color:var(--rust)" onclick="decide('${r.id}','rejected')">Reject</button>`;}
     return `<div class="req"><div><div style="font-weight:700;font-size:15px">${r.name||""}</div>
       <div style="font-size:13px;color:var(--muted)">${enLabel(r.start_date)} - ${enLabel(r.end_date)} &middot; ${daysBetween(r.start_date,r.end_date)} days${r.reason?" &middot; "+r.reason:""}</div></div>
-      <div style="display:flex;align-items:center">${actions}</div></div>`;
-  }).join("");
+      <div style="display:flex;align-items:center">${actions}</div></div>`;}).join("");
+
+  if(isManager) renderDash();
 }
 
-render();
-refreshAuth();
-load();
+// team members: reports + manager themselves, with display names
+function teamList(){
+  const arr=myReports.map(em=>({email:em,name:teamMap[em]||em}));
+  return arr;
+}
+
+function renderDash(){
+  if(!isManager)return;
+  const team=teamList();
+
+  // ---- Monthly grid ----
+  const y=dashView.getFullYear(),mo=dashView.getMonth();
+  document.getElementById("gridMonthTitle").textContent=`${MONTHS[mo]} ${y}`;
+  const dim=new Date(y,mo+1,0).getDate();
+  // header
+  let head="<tr><th class='name'>Employee</th>";
+  for(let d=1;d<=dim;d++){const dd=new Date(y,mo,d);head+=`<th class="${isWeekend(dd)?'we':''}">${d}</th>`;}
+  head+="</tr>";
+  // status per employee per day
+  const mreqs=requests.filter(r=>r.status!=="rejected");
+  let rows="";
+  team.forEach(p=>{
+    let row=`<tr><td class="name">${p.name}</td>`;
+    for(let d=1;d<=dim;d++){
+      const dd=new Date(y,mo,d);const ds=fmt(dd);
+      let cls=isWeekend(dd)?"we":"";
+      const hit=mreqs.find(r=>(r.requester_email||"").toLowerCase()===p.email && ds>=r.start_date && ds<=r.end_date);
+      if(hit){cls=hit.status==="approved"?"d-approved":"d-pending";}
+      row+=`<td class="${cls}"></td>`;
+    }
+    row+="</tr>";rows+=row;
+  });
+  if(team.length===0)rows=`<tr><td class="name" colspan="99" style="color:var(--muted)">No team members found in the directory.</td></tr>`;
+  document.getElementById("gridTable").innerHTML=head+rows;
+
+  // ---- Month summary (working days approved this month) ----
+  const mStart=new Date(y,mo,1),mEnd=new Date(y,mo,dim);
+  let ms="<tr><th>Employee</th><th class='num'>Approved</th><th class='num'>Pending</th></tr>";
+  team.forEach(p=>{
+    let appr=0,pend=0;
+    requests.forEach(r=>{if((r.requester_email||"").toLowerCase()!==p.email)return;
+      if(r.status==="approved")appr+=workingDaysInRange(r,mStart,mEnd);
+      else if(r.status==="pending")pend+=workingDaysInRange(r,mStart,mEnd);});
+    ms+=`<tr><td>${p.name}</td><td class="num">${appr}</td><td class="num">${pend}</td></tr>`;
+  });
+  document.getElementById("monthSum").innerHTML=ms;
+
+  // ---- Yearly balance ----
+  document.getElementById("yearTitle").textContent=`Year ${dashYear}`;
+  const yStart=new Date(dashYear,0,1),yEnd=new Date(dashYear,11,31);
+  let ys="<tr><th>Employee</th><th class='num'>Allocated</th><th class='num'>Taken</th><th class='num'>Remaining</th></tr>";
+  team.forEach(p=>{
+    const al=allocations.find(a=>a.email===p.email&&a.year===dashYear);
+    const allocated=al?al.total_days:0;
+    let taken=0;
+    requests.forEach(r=>{if((r.requester_email||"").toLowerCase()!==p.email)return;
+      if(r.status==="approved")taken+=workingDaysInRange(r,yStart,yEnd);});
+    const remaining=allocated-taken;
+    ys+=`<tr><td>${p.name}</td>
+      <td class="num"><input class="alloc-input" type="number" min="0" value="${allocated}"
+        onchange="saveAlloc('${p.email}',${dashYear},this.value)"></td>
+      <td class="num">${taken}</td>
+      <td class="num ${remaining<0?'neg':''}">${remaining}</td></tr>`;
+  });
+  document.getElementById("yearSum").innerHTML=ys;
+}
+
+render();refreshAuth();load();
 </script>
 </body>
 </html>
